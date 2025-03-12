@@ -1,0 +1,5 @@
+#!/bin/bash
+
+set -e
+
+kill -HUP `cat $HOME/data/app.pid` || true

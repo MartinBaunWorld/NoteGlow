@@ -1,0 +1,31 @@
+#!/bin/bash
+
+set -e
+source ./remote/setenv
+
+read -p "./manage.py collectstatic? (y/n): " -n 1 -r
+echo
+if [[ $REPLY =~ ^[Yy]$ ]]
+then
+	echo Collecting static files
+	./manage.py collectstatic --noinput
+fi	
+
+echo Syncing app to $HOST..
+rsync \
+    -hzrtuv \
+    --copy-links \
+    --delete-before \
+    --omit-dir-times \
+    --exclude-from='.excludes.txt' \
+    . $HOST:app/
+
+echo Syncing .env.json..
+scp $ENV/.env.json $HOST:app/
+
+echo Syncing cron..
+scp $ENV/cron $HOST:app/
+
+
+ssh $HOST -- "cd app && ./bin/build"
+./remote/play

@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block content %}
+    <main>
+	<div>
+		<h1>My Notes</h1>
+
+		<a hx-post="/new_note" hx-prompt="Name" href="#new_note">New Note</a><br/>
+		{% for n in notes %}
+		<a href="/notes/{{ n.pid }}/">{{ n.name }}</a><br/>
+		{% endfor %}
+	</div>
+    </main>
+{% endblock %}

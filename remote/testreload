@@ -1,0 +1,3 @@
+#!/bin/bash
+
+nodemon --watch . --ext "py html" --exec "pytest"

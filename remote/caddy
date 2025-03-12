@@ -1,0 +1,21 @@
+#!/bin/bash
+
+set -e
+source ./remote/setenv
+
+# Standard sites importer Caddyfile
+echo "{" > /tmp/Caddyfile
+echo "	debug" >> /tmp/Caddyfile
+echo "}" >> /tmp/Caddyfile
+echo "(cors) {" >> /tmp/Caddyfile
+echo "	header Access-Control-Allow-Origin \"*\"" >> /tmp/Caddyfile
+echo "	header Access-Control-Request-Method GET" >> /tmp/Caddyfile
+echo "}" >> /tmp/Caddyfile
+echo "import sites/*" >> /tmp/Caddyfile
+
+scp "/tmp/Caddyfile" $RHOST:"./Caddyfile"
+ssh $RHOST -- "mkdir -p ~/sites"
+scp "$ENV/Caddyfile" $RHOST:"sites/$PROJECT"
+ssh $RHOST -- "./caddy validate"
+ssh $RHOST -- "pkill -9 caddy"
+ssh $RHOST -- "nohup ./caddy start > /dev/null 2>&1 & disown"

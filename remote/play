@@ -1,0 +1,6 @@
+#!/bin/bash
+
+set -e
+source ./remote/setenv
+
+python3 play.py $WEB_URL

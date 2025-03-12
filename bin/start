@@ -1,0 +1,20 @@
+#!/bin/bash
+
+set -e
+
+mkdir -p $HOME/data
+
+gunicorn \
+    --daemon \
+    --threads=2 \
+    --workers=2 \
+    --graceful-timeout 10 \
+    --timeout 30 \
+    --max-requests=500 \
+    --max-requests-jitter=100 \
+    --capture-output \
+    --access-logfile=$HOME/data/gunicorn.log \
+    --error-logfile=$HOME/data/gunicorn.log \
+    --pid $HOME/data/app.pid \
+    --bind "unix:$HOME/data/gunicorn.sock" \
+    'django_project.wsgi'

@@ -1,0 +1,23 @@
+#!/usr/bin/env python3
+import setup # noqa
+
+from datetime import datetime, timedelta
+from app.models import Event
+from django.core.management import call_command
+from django.db import connection
+
+
+n_days_ago = datetime.utcnow() - timedelta(days=30)
+Event.objects.filter(
+    created__lt=n_days_ago,
+).delete()
+
+
+call_command("silk_clear_request_log")
+call_command("silk_request_garbage_collect")
+
+
+with connection.cursor() as cursor:
+    cursor.execute("VACUUM;")
+    cursor.execute("REINDEX;")
+    cursor.execute("ANALYZE;")

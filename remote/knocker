@@ -1,0 +1,6 @@
+#!/bin/bash
+
+set -e
+
+echo Knocking $IP..
+knock -d 100 $IP 50000 1000 50001 2000

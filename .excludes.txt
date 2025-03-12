@@ -1,0 +1,25 @@
+# virtual env
+venv
+.venv
+
+# Here and there
+data/
+tmp/
+.todel/
+.pytest_cache/
+*.log
+.git
+compiled_static/*
+*.pyc
+
+
+
+# Envs
+./0/
+./1/
+./2/
+
+# From 0, 1 folders
+Caddyfile
+.env.json
+cron

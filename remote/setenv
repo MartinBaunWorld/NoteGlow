@@ -1,0 +1,32 @@
+#!/bin/bash
+
+set -e
+
+if [ -z "$ENV" ]; then
+	echo "What env to work on?"
+	echo "0: Production environment"
+	echo "1: Staging environment"
+	read -p "Please enter 0 or 1: " -n 1 choice
+	echo
+
+	if [ "$choice" == "0" ]; then
+		export IP=`cat 0/.env.json  | jq -r ".IP"`
+		export ENV=`cat 0/.env.json  | jq -r ".ENV"`
+		export PROJECT=`cat 0/.env.json  | jq -r ".PROJECT"`
+		export WEB_URL=`cat 0/.env.json  | jq -r ".WEB_URL"`
+		export HOST=$PROJECT@$IP
+		export RHOST=root@$IP
+	elif [ "$choice" == "1" ]; then
+		export IP=`cat 1/.env.json  | jq -r ".IP"`
+		export ENV=`cat 1/.env.json  | jq -r ".ENV"`
+		export PROJECT=`cat 1/.env.json  | jq -r ".PROJECT"`
+		export WEB_URL=`cat 1/.env.json  | jq -r ".WEB_URL"`
+		export HOST=$PROJECT@$IP
+		export RHOST=root@$IP
+	else
+	    echo "Invalid choice. Please run the script again and select 1 or 2."
+	    exit 1
+	fi
+
+	./remote/knocker
+fi

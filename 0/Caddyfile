@@ -1,0 +1,5 @@
+noteglow.com {
+    handle /* {
+            reverse_proxy unix//home/noteglow0/data/gunicorn.sock
+    }
+}
