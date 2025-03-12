@@ -6,6 +6,7 @@
 	hx-post="/notes/{{ note.pid }}/"
 	hx-swap="outerHTML"
 	hx-encoding="multipart/form-data"
+	id="note-form"
 >
 <textarea
 	style="width: 100%;
@@ -24,4 +25,16 @@
 <input type="submit" value="Save"/>
 <a href="/notes/{{ note.pid }}">Cancel</a>
 </form>
+<script>
+    // Add an event listener to the textarea
+    document.getElementById('body').addEventListener('keydown', function(event) {
+        // Check if CTRL + Enter is pressed
+        if (event.ctrlKey && event.key === 'Enter') {
+            // Prevent the default behavior of the Enter key
+            event.preventDefault();
+            // Submit the form using HTMX
+            htmx.trigger('#note-form', 'submit');
+        }
+    });
+</script>
 </section>
