@@ -55,3 +55,10 @@ class EventAdmin(admin.ModelAdmin):
 
     date_hierarchy = 'created'
     list_per_page = 50
+
+
+@admin.register(Note)
+class NoteAdmin(admin.ModelAdmin):
+    list_display = ('name', 'body', 'pid')
+    search_fields = ('name', 'body', 'pid')
+    readonly_fields = ('pid',)
