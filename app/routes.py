@@ -9,6 +9,7 @@ from django.urls import path
 from app.models import (
     User,
     Note,
+    Event,
 )
 
 from django.shortcuts import render
@@ -20,6 +21,7 @@ from markdown import markdown
 
 
 def note_all(request):
+    Event.info(name='note_all', request=request)
     notes = [
         Note.objects.filter(pid=pid).first()
         for pid in request.session.get('notes', [])
@@ -45,6 +47,8 @@ This is your new note.
         body=body.strip(),
     )
     note.save()
+    Event.info(name='note_new', request=request, body=dict(pid=note.pid))
+
     return HttpResponse("", headers={"hx-redirect": f"/notes/{ note.pid }"})
 
 
@@ -53,7 +57,8 @@ def get_name(txt):
 
 
 @csrf_exempt
-def notes(request, pid):
+def details(request, pid):
+    Event.info(name='note_details', request=request, body=dict(pid=pid))
     note = Note.objects.filter(pid=pid).first()
 
     if not note:
@@ -114,5 +119,5 @@ urlpatterns = [
     path("new_note", new_note),
     path("renew_lock/<str:pid>", renew_lock),
     path("lock/<str:pid>", lock),
-    path("notes/<str:pid>/", notes),
+    path("notes/<str:pid>/", details),
 ]

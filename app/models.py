@@ -2,6 +2,8 @@ from django.contrib.auth.models import AbstractUser, User
 from django.db.models import *
 from user_agents import parse
 
+from utils import get_ip
+
 
 def uuid():
     # For some reasons Django don't like it in other way
@@ -84,10 +86,9 @@ class Event(Model):
 
     @classmethod
     def _create_event(cls, level, request=None, **kwargs):
-        def get_ip(request):
-            return '127.0.0.1'
         def ip2country(ip):
-            return 'Denmark'
+            return 'TODO'
+
         user = getattr(request, 'user', None)
         if user and isinstance(user, User):
             kwargs.setdefault('email', user.email)
