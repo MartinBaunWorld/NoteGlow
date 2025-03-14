@@ -9,8 +9,9 @@ from django.urls import path
 from app.models import (
     User,
     Note,
-    Event,
 )
+
+from events.models import Event
 
 from django.shortcuts import render
 from django.http import HttpResponse
