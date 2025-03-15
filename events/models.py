@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from user_agents import parse
 
 from utils import get_ip
+from state import ip2country
 
 
 class Event(Model):
@@ -63,9 +64,6 @@ class Event(Model):
 
     @classmethod
     def _create_event(cls, level, request=None, **kwargs):
-        def ip2country(ip):
-            return 'TODO'
-
         user = getattr(request, 'user', None)
         if user and isinstance(user, User):
             kwargs.setdefault('email', user.email)

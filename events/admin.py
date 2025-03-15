@@ -17,8 +17,6 @@ class EventAdmin(admin.ModelAdmin):
         'name', 'email', 'ip', 'country', 'user_agent', 'device', 'os'
     )
 
-    list_editable = ('level', )
-
     readonly_fields = [
         field.name for field in Event._meta.fields if field.name != 'level'
     ]
