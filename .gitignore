@@ -21,3 +21,4 @@ venv
 
 staticfiles/
 .ip.mmdb
+todos.txt
