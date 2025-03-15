@@ -48,7 +48,7 @@ This is your new note.
         body=body.strip(),
     )
     note.save()
-    Event.info(name='note_new', request=request, body=dict(pid=note.pid))
+    Event.info(name='note_new', request=request, ref=note.pid)
 
     return HttpResponse("", headers={"hx-redirect": f"/notes/{ note.pid }"})
 
@@ -59,11 +59,13 @@ def get_name(txt):
 
 @csrf_exempt
 def details(request, pid):
-    Event.info(name='note_details', request=request, body=dict(pid=pid))
     note = Note.objects.filter(pid=pid).first()
 
     if not note:
+        Event.info(name='note_details', request=request, ref=pid, val1=404)
         return HttpResponse("Note was not found")
+
+    Event.info(name='note_details', request=request, ref=pid, val1=200)
 
     notes = request.session.get('notes', [])
     if note.pid in notes:
@@ -81,11 +83,11 @@ def details(request, pid):
         return HttpResponse("", headers={"hx-redirect": f"/notes/{ note.pid }"})
 
     return render(request, "details.html", dict(note=note, body=markdown(note.body)))
-    # return HttpResponse("ok")
 
 
 @csrf_exempt
 def renew_lock(request, pid):
+    Event.info(name='renew_lock', request=request, ref=pid)
     note = Note.objects.filter(pid=pid).first()
 
     if not note:
@@ -97,6 +99,7 @@ def renew_lock(request, pid):
 
 @csrf_exempt
 def lock(request, pid):
+    Event.info(name='lock', request=request, ref=pid)
     note = Note.objects.filter(pid=pid).first()
 
     if not note:
@@ -111,6 +114,7 @@ def lock(request, pid):
 
 
 def about(request):
+    Event.info(name='about', request=request)
     return render(request, "about.html")
 
 

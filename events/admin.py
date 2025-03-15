@@ -4,37 +4,23 @@ from .models import Event
 
 @admin.register(Event)
 class EventAdmin(admin.ModelAdmin):
-    list_display = (
-        'id', 'level', 'name', 'email', 'country', 'ip', 'created',
-        'is_mobile', 'is_bot', 'os', 'device'
-    )
-
-    list_filter = (
-        'level', 'country', 'is_mobile', 'is_bot', 'os', 'created'
-    )
-
-    search_fields = (
-        'name', 'email', 'ip', 'country', 'user_agent', 'device', 'os'
-    )
-
-    readonly_fields = [
-        field.name for field in Event._meta.fields if field.name != 'level'
-    ]
+    list_display = ('created', 'level', 'name', 'email', 'country', 'ref', 'val1', 'val2', 'sid', 'url', 'ip', 'is_bot')
+    list_filter = ('level', 'is_bot', 'is_mobile', 'is_tablet', 'is_pc')
+    search_fields = ('name', 'email', 'country', 'ref', 'sid', 'ip')
+    readonly_fields = ('created',)
 
     fieldsets = (
-        ('Basic Information', {
-            'fields': ('level', 'name', 'email', 'country', 'created')
+        (None, {
+            'fields': ('created', 'level', 'name', 'email', 'country', 'ref', 'sid', 'url', 'val1', 'val2', 'val3', 'ip', 'body')
         }),
-        ('Request', {
-            'fields': ('body', 'ip', 'ref', 'sid', 'url')
+        ('Device Info', {
+            'fields': ('user_agent', 'device', 'browser', 'browser_family', 'is_mobile', 'is_tablet', 'is_touch_capable', 'is_pc', 'is_bot')
         }),
-        ('Device Information', {
-            'fields': (
-                'user_agent', 'device', 'browser', 'browser_family',
-                'is_mobile', 'is_tablet', 'is_touch_capable', 'is_pc', 'is_bot',
-                'os', 'os_family', 'os_version',
-                'device_family', 'device_brand', 'device_model'
-            )
+        ('OS Info', {
+            'fields': ('os', 'os_family', 'os_version')
+        }),
+        ('Device Details', {
+            'fields': ('device_family', 'device_brand', 'device_model')
         }),
     )
 
