@@ -13,6 +13,8 @@ DATA_DIR = env.get("DATA_DIR", str(BASE_DIR) + "/data")
 mkdir(DATA_DIR)
 
 
+# 10000 days saved
+SESSION_COOKIE_AGE = 10000 * 24 * 60 * 60
 ADMIN_PATH = env.get('ADMIN_PATH', 'admin/')
 
 # Quick-start development settings - unsuitable for production
