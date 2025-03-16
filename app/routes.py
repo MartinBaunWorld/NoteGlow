@@ -9,6 +9,7 @@ from django.urls import path
 from app.models import (
     User,
     Note,
+    NoteVersion,
 )
 
 from events.models import Event
@@ -57,16 +58,9 @@ def get_name(txt):
     return txt.strip().split("\n")[0].replace("#", "")
 
 
-@csrf_exempt
-def details(request, pid):
-    note = Note.objects.filter(pid=pid).first()
-
-    if not note:
-        Event.info(name='note_details', request=request, ref=pid, val1=404)
-        return HttpResponse("Note was not found")
-
-    Event.info(name='note_details', request=request, ref=pid, val1=200)
-
+def add_note_to_session(request, note):
+    # TODO could probably be done more efficient
+    # but django likes to play games
     notes = request.session.get('notes', [])
     if note.pid in notes:
         notes.remove(note.pid)
@@ -75,14 +69,45 @@ def details(request, pid):
 
     request.session['notes'] = notes
 
-    if request.method == "POST":
-        note.body = request.POST.get('body', note.body)
-        note.name = get_name(note.body)
-        note.locked_to = None
-        note.save()
-        return HttpResponse("", headers={"hx-redirect": f"/notes/{ note.pid }"})
+
+@csrf_exempt
+def details(request, pid):
+    note = Note.objects.filter(pid=pid).first()
+
+    if not note:
+        Event.info(name='note_details', request=request, ref=pid, val1=404)
+        # TODO nicer message
+        return HttpResponse("Note was not found")
+
+    Event.info(name='note_details', request=request, ref=pid, val1=200)
+    
+    add_note_to_session(request, note)
 
     return render(request, "details.html", dict(note=note, body=markdown(note.body)))
+
+
+@csrf_exempt
+def note_edit(request, pid):
+    note = Note.objects.filter(pid=pid).first()
+
+    if not note:
+        Event.info(name='note_edit', request=request, ref=pid, val1=404)
+        # TODO nicer message
+        return HttpResponse("Note was not found")
+
+    version = NoteVersion(
+        body=note.body,
+        note=note,
+    )
+    version.save()
+
+    Event.info(name='note_edit', request=request, ref=pid, val1=200, val2=str(version.id))
+
+    note.body = request.POST.get('body', note.body)
+    note.name = get_name(note.body)
+    note.locked_to = None
+    note.save()
+    return HttpResponse("", headers={"hx-redirect": f"/notes/{ note.pid }"})
 
 
 @csrf_exempt
@@ -125,4 +150,5 @@ urlpatterns = [
     path("renew_lock/<str:pid>", renew_lock),
     path("lock/<str:pid>", lock),
     path("notes/<str:pid>/", details),
+    path("note_edit/<str:pid>/", note_edit),
 ]

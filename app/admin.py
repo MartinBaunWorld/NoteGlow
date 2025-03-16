@@ -19,3 +19,9 @@ class NoteAdmin(admin.ModelAdmin):
     list_display = ('name', 'body', 'pid')
     search_fields = ('name', 'body', 'pid')
     readonly_fields = ('pid',)
+
+
+@admin.register(NoteVersion)
+class NoteVersionAdmin(admin.ModelAdmin):
+    list_display = ('note', 'body')
+    search_fields = ('note', 'body')
