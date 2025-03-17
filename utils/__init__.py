@@ -2,6 +2,7 @@ from .get_csrf import get_csrf
 from .get_ip import get_ip
 from .uuid import uuid
 from .cache import cache
+from .markdown import markdown
 
 # These are here so it's easier to remember. Just from utils import redirect
 from django.shortcuts import render, redirect

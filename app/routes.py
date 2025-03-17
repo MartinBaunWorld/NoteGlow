@@ -18,8 +18,8 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 
-from utils import uuid
-from markdown import markdown
+from utils import uuid, markdown
+
 
 
 def note_all(request):
