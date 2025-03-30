@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Event Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .chart-container {
+            width: 80%;
+            margin: 20px auto;
+        }
+        .chart-box {
+            margin-bottom: 40px;
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 5px;
+        }
+        .pagination {
+            margin: 20px 0;
+            text-align: center;
+            padding: 10px;
+        }
+        .btn {
+            padding: 8px 15px;
+            margin: 0 10px;
+            background: #f0f0f0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            text-decoration: none;
+            color: #333;
+        }
+        .current-month {
+            font-weight: bold;
+            font-size: 1.2em;
+            padding: 0 15px;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Event Analytics</h1>
+    
+    <div class="pagination">
+        {% if show_prev %}
+        <a href="?month={{ prev_month }}&year={{ prev_year }}" class="btn">
+            &larr; {{ prev_month|stringformat:"02d" }}/{{ prev_year }}
+        </a>
+        {% endif %}
+        
+        <span class="current-month">{{ month_name }} {{ current_year }}</span>
+        
+        <a href="?month={{ next_month }}&year={{ next_year }}" class="btn">
+            {{ next_month|stringformat:"02d" }}/{{ next_year }} &rarr;
+        </a>
+    </div>
+
+    <div id="charts-container"></div>
+
+    <script>
+        const eventsData = JSON.parse('{{ events_data_json|escapejs }}');
+        const container = document.getElementById('charts-container');
+        
+        eventsData.forEach((event, index) => {
+            // Create chart container
+            const chartBox = document.createElement('div');
+            chartBox.className = 'chart-box';
+            
+            const title = document.createElement('h2');
+            title.textContent = `${event.name} (Total: ${event.total})`;
+            chartBox.appendChild(title);
+            
+            const canvasContainer = document.createElement('div');
+            canvasContainer.className = 'chart-container';
+            
+            const canvas = document.createElement('canvas');
+            canvas.id = `chart-${index}`;
+            canvasContainer.appendChild(canvas);
+            chartBox.appendChild(canvasContainer);
+            
+            container.appendChild(chartBox);
+            
+            // Create chart
+            new Chart(canvas, {
+                type: 'line',
+                data: {
+                    labels: event.labels,
+                    datasets: [{
+                        label: `${event.name} events`,
+                        data: event.counts,
+                        borderColor: `hsl(${index * 60}, 75%, 50%)`,
+                        backgroundColor: `hsla(${index * 60}, 75%, 50%, 0.1)`,
+                        borderWidth: 2,
+                        tension: 0.1,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: { 
+                        y: { 
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Number of Events'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Date'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top'
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+</body>
+</html>
