@@ -479,11 +479,12 @@ function delayedSave() {
 async function save() {
     document.getElementById("save-status").innerHTML = "Saving";
     const formData = new FormData();
-    formData.append('body', document.querySelector('#editor').innerHTML);
+    await formData.append('body', document.querySelector('#editor').innerHTML);
       fetch(`/note_edit/{{note.pid}}/`, {
       method: 'POST',
       body: formData
     });
+    saveTimer = null;
     document.getElementById("save-status").innerHTML = "Saved";
 }
 
@@ -640,22 +641,26 @@ async function save() {
                 element.href = url;
             });
             selection.removeAllRanges();
+            delayedSave()
         }
 
         // Called by the text size dropdown.
         function applyTextSize(size) {
+            delayedSave()
             if (!size) return;
             applyStyle("font-size: " + size + ";");
         }
 
         // Called when a text color swatch is clicked.
         function applyTextColor(color) {
+            delayedSave()
             if (!color) return;
             applyStyle("color: var(--note-text-color-" + color + ");");
         }
 
         // Called when a highlight (background color) swatch is clicked.
         function applyHighlightColor(color) {
+            delayedSave()
             if (!color) return;
             applyStyle("background-color: var(--note-highlight-color-" + color + ");");
         }
@@ -777,6 +782,7 @@ async function save() {
 
         // Normalize stray text nodes and nested blocks.
         function cleanEditor() {
+            delayedSave()
             const editor = document.getElementById('editor');
             if (editor.firstChild && ["H1", "H2", "H3", "H4", "H5", "H6", "P"].includes(editor.firstChild.nodeName)) {
                 return;
@@ -787,7 +793,6 @@ async function save() {
         }
 
         function keydownHandler(e) {
-            delayedSave()
             if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
                 splitBlock();
@@ -809,15 +814,6 @@ async function save() {
             }
         }
 
-        function unloadHandler(e) {
-            if (document.getElementById("editor").contentEditable !== "true") {
-                return;
-            }
-            e.preventDefault()
-            e.returnValue = '';
-        }
-
-
         editor = document.getElementById('editor');
 
         editor.addEventListener('keydown', keydownHandler);
@@ -826,7 +822,14 @@ async function save() {
         editor.addEventListener("input", cleanEditor);
         editor.addEventListener("focus", cleanEditor);
 
-        window.addEventListener("beforeunload", unloadHandler);
+    window.addEventListener("beforeunload", function (e) {
+      console.log(saveTimer);
+      if (saveTimer != null) {
+        e.preventDefault();
+        e.returnValue = "";
+      }
+    });
+
 
     </script>
 
