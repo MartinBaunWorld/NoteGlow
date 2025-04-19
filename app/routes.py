@@ -124,6 +124,9 @@ def renew_lock(request, pid):
 
 @csrf_exempt
 def lock(request, pid):
+    if request.method != 'POST':
+        return redirect(f"/notes/{pid}")
+
     Event.info(name='lock', request=request, ref=pid)
     note = Note.objects.filter(pid=pid).first()
 

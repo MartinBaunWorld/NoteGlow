@@ -1,3 +1,7 @@
+{% extends 'base.html' %}
+{% block title %}{{ note.name }} | NoteGlow.com{% endblock %}
+{% block content %}
+    <main id="main">
 <section class="full-section">
 	<div id="lock-status" hx-get="/renew_lock/{{ note.pid }}" hx-trigger="every 10s" hx-swap="innerHTML" hx-vals='{"lock_id": "it"}'>
 	Locked.. only you can edit this note.
@@ -38,3 +42,5 @@
     });
 </script>
 </section>
+    </main>
+{% endblock %}

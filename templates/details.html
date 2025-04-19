@@ -2,8 +2,10 @@
 {% block title %}{{ note.name }} | NoteGlow.com{% endblock %}
 {% block content %}
     <main id="main">
-	<section hx-trigger="click" readonly hx-post="/lock/{{ note.pid }}" hx-target="section" hx-swap="outerHTML" >
-		<div>Click to edit</div>
+	<section>
+        <form method="POST" action="/lock/{{ note.pid }}">
+            <input type="submit" value="Edit"/>
+        </form>
 		<div style="background-color: rgb(255, 255, 255, 0.05);padding: 10px;">{{ body|safe }}</div>
         </section>
     </main>
