@@ -127,10 +127,10 @@ def renew_lock(request, pid):
     note = Note.objects.filter(pid=pid).first()
 
     if not note:
-        return HttpResponse("Note was not found")
+        return JsonResponse({"msg": "Note was not found"}, status=404)
     note.locked_to = now() + timedelta(seconds=10)
     note.save()
-    return HttpResponse("Locked.. only you can edit this note.")
+    return JsonResponse({"msg": "ok"})
 
 
 @csrf_exempt

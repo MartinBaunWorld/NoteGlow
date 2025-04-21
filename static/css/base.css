@@ -67,3 +67,19 @@ h1,h2,h3,h4,h5 {
 section {
   margin: 0;
 }
+
+.renew-warn {
+  padding: 15px;
+  border-radius: 10px;
+  position: fixed;
+  top: 60px;
+  left: 20px;
+  z-index: 9999;
+  display: none;
+  background-color: hsl(0 50% 30%);
+  color: #fff;
+}
+
+.renew-warn p {
+  margin: 0;
+}
