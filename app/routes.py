@@ -19,7 +19,7 @@ from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from bs4 import BeautifulSoup
 
-from utils import uuid, markdown
+from utils import uuid
 from state import clean_html
 
 
@@ -92,7 +92,7 @@ def details(request, pid):
     
     add_note_to_session(request, note)
 
-    return render(request, "details.html", dict(note=note, body=markdown(note.body)))
+    return render(request, "details.html", dict(note=note))
 
 
 @csrf_exempt
@@ -149,7 +149,7 @@ def lock(request, pid):
 
     note.locked_to = now() + timedelta(seconds=15)
     note.save()
-    return render(request, "editor.html", dict(note=note, body=markdown(note.body)))
+    return render(request, "editor.html", dict(note=note))
 
 
 def about(request):
