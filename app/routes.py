@@ -104,8 +104,9 @@ def note_edit(request, pid):
         # TODO nicer message
         return HttpResponse("Note was not found")
 
-    if note.locked_to and note.locked_to >= now():
-        return HttpResponse("Sorry, it's locked")
+    # TODO check log is the correct tab and if not say it is locked
+    # if note.locked_to and note.locked_to >= now():
+    #    return HttpResponse("Sorry, it's locked")
 
     version = NoteVersion(
         body=note.body,
