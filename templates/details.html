@@ -2,11 +2,11 @@
 {% block title %}{{ note.name }} | NoteGlow.com{% endblock %}
 {% block content %}
     <main id="main">
-	<section>
-        <form method="POST" action="/lock/{{ note.pid }}">
-            <input type="submit" value="Edit"/>
-        </form>
-		<div style="background-color: rgb(255, 255, 255, 0.05);padding: 10px;">{{ note.body|safe }}</div>
+        <section class="note-box">
+            <form method="POST" action="/lock/{{ note.pid }}">
+                <input type="submit" value="Edit"/>
+            </form>
+            <div class="card">{{ note.body|safe }}</div>
         </section>
     </main>
 {% endblock %}

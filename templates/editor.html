@@ -101,10 +101,18 @@
     .editor-container {
         width: 100%;
         max-width: 800px;
-        background: rgb(255, 255, 255, 0.05);
-        padding: 30px;
-        border-radius: 12px;
-        box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .toolbar-nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+    }
+
+    .tools {
+        display: flex;
+        align-items: center;
     }
 
     #toolbar {
@@ -118,8 +126,11 @@
         border-radius: 12px;
         display: flex;
         flex-wrap: wrap;
-        justify-content: flex-start;
+        justify-content: space-between;
         align-items: center;
+        margin-bottom: .5rem;
+        gap: 30px;
+        flex-grow: 1;
     }
 
     #toolbar #splitbar {
@@ -212,20 +223,10 @@
         text-align: left;
     }
 
-    /* 편집 영역 */
     #editor {
-        border-radius: 12px;
-        padding: 15px;
         min-height: 250px;
         outline: none;
-        font-size: 16px;
-        line-height: 1.6;
         /* background: #f4f4f4; */
-    }
-
-    #editor p {
-        margin-top: 0.5em;
-        margin-bottom: 0.5em;
     }
 
     #editor a {
@@ -297,92 +298,97 @@
 
 {% block content %}
 <main id="main">
-    <div class="editor-container">
+    <div class="toolbar-nav">
+        <form method="POST" action="/notes/{{ note.pid }}">
+            <input type="submit" value="Go back"/>
+        </form>
         <div id="toolbar" class="no-print">
-            <button onclick="changeBlock('h1')">H1</button>
-            <button onclick="changeBlock('h2')">H2</button>
-            <button onclick="changeBlock('p')">P</button>
-            <button onclick="changeBlock('small')">S</button>
+            <div class="tools">
+                <button onclick="changeBlock('h1')">H1</button>
+                <button onclick="changeBlock('h2')">H2</button>
+                <button onclick="changeBlock('p')">P</button>
+                <button onclick="changeBlock('small')">S</button>
 
-            <button onclick="applyFormat('strong')"><b>B</b></button>
-            <button onclick="applyFormat('em')"><i>I</i></button>
-            <button onclick="applyFormat('u')"><u>U</u></button>
-            <button onclick="applyURL()">🔗</button>
+                <button onclick="applyFormat('strong')"><b>B</b></button>
+                <button onclick="applyFormat('em')"><i>I</i></button>
+                <button onclick="applyFormat('u')"><u>U</u></button>
+                <button onclick="applyURL()">🔗</button>
 
-            <label for="imageUpload">📷</label>
-            <input type="file" id="imageUpload" accept="image/*" onchange="insertImage(event)">
+                <label for="imageUpload">📷</label>
+                <input type="file" id="imageUpload" accept="image/*" onchange="insertImage(event)">
 
-            <div class="dropdown">
-                <button onclick="toggleDropdown('textColorDropdown')">Color</button>
-                <div id="textColorDropdown" class="dropdown-content">
-                    <div class="swatch-grid">
-                        <button class="color-swatch" style="background: var(--note-text-color-1);"
-                            onmousedown="event.preventDefault();"
-                            onclick="applyTextColor('1'); toggleDropdown('textColorDropdown')"></button>
-                        <button class="color-swatch" style="background: var(--note-text-color-2);"
-                            onmousedown="event.preventDefault();"
-                            onclick="applyTextColor('2'); toggleDropdown('textColorDropdown')"></button>
-                        <button class="color-swatch" style="background: var(--note-text-color-3);"
-                            onmousedown="event.preventDefault();"
-                            onclick="applyTextColor('3'); toggleDropdown('textColorDropdown')"></button>
-                        <button class="color-swatch" style="background: var(--note-text-color-4);"
-                            onmousedown="event.preventDefault();"
-                            onclick="applyTextColor('4'); toggleDropdown('textColorDropdown')"></button>
-                        <button class="color-swatch" style="background: var(--note-text-color-5);"
-                            onmousedown="event.preventDefault();"
-                            onclick="applyTextColor('5'); toggleDropdown('textColorDropdown')"></button>
-                        <button class="color-swatch" style="background: var(--note-text-color-6);"
-                            onmousedown="event.preventDefault();"
-                            onclick="applyTextColor('6'); toggleDropdown('textColorDropdown')"></button>
-                        <button class="color-swatch" style="background: var(--note-text-color-7);"
-                            onmousedown="event.preventDefault();"
-                            onclick="applyTextColor('7'); toggleDropdown('textColorDropdown')"></button>
-                        <button class="color-swatch" style="background: var(--note-text-color-8);"
-                            onmousedown="event.preventDefault();"
-                            onclick="applyTextColor('8'); toggleDropdown('textColorDropdown')"></button>
+                <div class="dropdown">
+                    <button onclick="toggleDropdown('textColorDropdown')">Color</button>
+                    <div id="textColorDropdown" class="dropdown-content">
+                        <div class="swatch-grid">
+                            <button class="color-swatch" style="background: var(--note-text-color-1);"
+                                onmousedown="event.preventDefault();"
+                                onclick="applyTextColor('1'); toggleDropdown('textColorDropdown')"></button>
+                            <button class="color-swatch" style="background: var(--note-text-color-2);"
+                                onmousedown="event.preventDefault();"
+                                onclick="applyTextColor('2'); toggleDropdown('textColorDropdown')"></button>
+                            <button class="color-swatch" style="background: var(--note-text-color-3);"
+                                onmousedown="event.preventDefault();"
+                                onclick="applyTextColor('3'); toggleDropdown('textColorDropdown')"></button>
+                            <button class="color-swatch" style="background: var(--note-text-color-4);"
+                                onmousedown="event.preventDefault();"
+                                onclick="applyTextColor('4'); toggleDropdown('textColorDropdown')"></button>
+                            <button class="color-swatch" style="background: var(--note-text-color-5);"
+                                onmousedown="event.preventDefault();"
+                                onclick="applyTextColor('5'); toggleDropdown('textColorDropdown')"></button>
+                            <button class="color-swatch" style="background: var(--note-text-color-6);"
+                                onmousedown="event.preventDefault();"
+                                onclick="applyTextColor('6'); toggleDropdown('textColorDropdown')"></button>
+                            <button class="color-swatch" style="background: var(--note-text-color-7);"
+                                onmousedown="event.preventDefault();"
+                                onclick="applyTextColor('7'); toggleDropdown('textColorDropdown')"></button>
+                            <button class="color-swatch" style="background: var(--note-text-color-8);"
+                                onmousedown="event.preventDefault();"
+                                onclick="applyTextColor('8'); toggleDropdown('textColorDropdown')"></button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Highlight Color Dropdown -->
+                <div class="dropdown">
+                    <button onclick="toggleDropdown('highlightDropdown')">Highlight</button>
+                    <div id="highlightDropdown" class="dropdown-content">
+                        <div class="swatch-grid">
+                            <button class="color-swatch" style="background: var(--note-highlight-color-1);"
+                                onmousedown="event.preventDefault();"
+                                onclick="applyHighlightColor('1'); toggleDropdown('highlightDropdown')"></button>
+                            <button class="color-swatch" style="background: var(--note-highlight-color-2);"
+                                onmousedown="event.preventDefault();"
+                                onclick="applyHighlightColor('2'); toggleDropdown('highlightDropdown')"></button>
+                            <button class="color-swatch" style="background: var(--note-highlight-color-3);"
+                                onmousedown="event.preventDefault();"
+                                onclick="applyHighlightColor('3'); toggleDropdown('highlightDropdown')"></button>
+                            <button class="color-swatch" style="background: var(--note-highlight-color-4);"
+                                onmousedown="event.preventDefault();"
+                                onclick="applyHighlightColor('4'); toggleDropdown('highlightDropdown')"></button>
+                            <button class="color-swatch" style="background: var(--note-highlight-color-5);"
+                                onmousedown="event.preventDefault();"
+                                onclick="applyHighlightColor('5'); toggleDropdown('highlightDropdown')"></button>
+                            <button class="color-swatch" style="background: var(--note-highlight-color-6);"
+                                onmousedown="event.preventDefault();"
+                                onclick="applyHighlightColor('6'); toggleDropdown('highlightDropdown')"></button>
+                            <button class="color-swatch" style="background: var(--note-highlight-color-7);"
+                                onmousedown="event.preventDefault();"
+                                onclick="applyHighlightColor('7'); toggleDropdown('highlightDropdown')"></button>
+                            <button class="color-swatch" style="background: var(--note-highlight-color-8);"
+                                onmousedown="event.preventDefault();"
+                                onclick="applyHighlightColor('8'); toggleDropdown('highlightDropdown')"></button>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Highlight Color Dropdown -->
-            <div class="dropdown">
-                <button onclick="toggleDropdown('highlightDropdown')">Highlight</button>
-                <div id="highlightDropdown" class="dropdown-content">
-                    <div class="swatch-grid">
-                        <button class="color-swatch" style="background: var(--note-highlight-color-1);"
-                            onmousedown="event.preventDefault();"
-                            onclick="applyHighlightColor('1'); toggleDropdown('highlightDropdown')"></button>
-                        <button class="color-swatch" style="background: var(--note-highlight-color-2);"
-                            onmousedown="event.preventDefault();"
-                            onclick="applyHighlightColor('2'); toggleDropdown('highlightDropdown')"></button>
-                        <button class="color-swatch" style="background: var(--note-highlight-color-3);"
-                            onmousedown="event.preventDefault();"
-                            onclick="applyHighlightColor('3'); toggleDropdown('highlightDropdown')"></button>
-                        <button class="color-swatch" style="background: var(--note-highlight-color-4);"
-                            onmousedown="event.preventDefault();"
-                            onclick="applyHighlightColor('4'); toggleDropdown('highlightDropdown')"></button>
-                        <button class="color-swatch" style="background: var(--note-highlight-color-5);"
-                            onmousedown="event.preventDefault();"
-                            onclick="applyHighlightColor('5'); toggleDropdown('highlightDropdown')"></button>
-                        <button class="color-swatch" style="background: var(--note-highlight-color-6);"
-                            onmousedown="event.preventDefault();"
-                            onclick="applyHighlightColor('6'); toggleDropdown('highlightDropdown')"></button>
-                        <button class="color-swatch" style="background: var(--note-highlight-color-7);"
-                            onmousedown="event.preventDefault();"
-                            onclick="applyHighlightColor('7'); toggleDropdown('highlightDropdown')"></button>
-                        <button class="color-swatch" style="background: var(--note-highlight-color-8);"
-                            onmousedown="event.preventDefault();"
-                            onclick="applyHighlightColor('8'); toggleDropdown('highlightDropdown')"></button>
-                    </div>
-                </div>
-            </div>
-
-            <div id="splitbar"></div>
             <div id="save-status">Saved</div>
 
         </div>
-
-        <div id="editorContainer" class="thin-line">
+    </div>
+    <div class="editor-container card">
+        <div id="editorContainer">
             <div id="editor" contenteditable="true">
                 {{ note.body|safe }}
             </div>
