@@ -1,0 +1,10 @@
+#!/bin/bash
+
+set -e
+. remote/setenv
+
+dst=${1:-"$HOME/mount"}
+
+echo sshfs $HOST:./ $dst
+mkdir -p $dst
+/usr/bin/sshfs $HOST:./ $dst

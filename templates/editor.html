@@ -1,30 +1,41 @@
-<section class="full-section">
-	<div id="lock-status" hx-get="/renew_lock/{{ note.pid }}" hx-trigger="every 10s" hx-swap="innerHTML" hx-vals='{"lock_id": "it"}'>
-	Locked.. only you can edit this note.
-</div>
-<form 
-	hx-post="/note_edit/{{ note.pid }}/"
-	hx-swap="outerHTML"
-	hx-encoding="multipart/form-data"
-	id="note-form"
-    class="edit-form"
->
-<textarea
-	style="
-            resize: none; /* Optional: Disable resizing */
-            font-size: 16px;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;"
-	autofocus
-	id="body"
-	name="body"
-	required
-    class="edit-textarea">{{ note.body }}</textarea>
+{% extends 'base.html' %}
+{% block title %}{{ note.name }} | NoteGlow.com{% endblock %}
 
-<input style="display: inline;" type="submit" value="Save"/>
-<a href="/notes/{{ note.pid }}">Cancel</a>
-</form>
+{% comment %}
+{% block content %}
+    <main id="main">
+        <section class="full-section">
+            <div id="lock-status" hx-get="/renew_lock/{{ note.pid }}" hx-trigger="every 10s" hx-swap="innerHTML" hx-vals='{"lock_id": "it"}'>
+                Locked.. only you can edit this note.
+            </div>
+            <form 
+                hx-post="/note_edit/{{ note.pid }}/"
+                hx-swap="outerHTML"
+                hx-encoding="multipart/form-data"
+                id="note-form"
+                class="edit-form"
+            >
+                <textarea
+                    style="
+                            resize: none; /* Optional: Disable resizing */
+                            font-size: 16px;
+                            padding: 10px;
+                            border: 1px solid #ccc;
+                            border-radius: 4px;"
+                    autofocus
+                    id="body"
+                    name="body"
+                    required
+                    class="edit-textarea">
+                    {{ note.body }}
+                </textarea>
+                <input style="display: inline;" type="submit" value="Save"/>
+                <a href="/notes/{{ note.pid }}">Cancel</a>
+            </form>
+        </section>
+    </main>
+{% endblock %}
+{% block scripts %}
 <script>
     // Add an event listener to the textarea
     document.getElementById('body').addEventListener('keydown', function(event) {
@@ -37,4 +48,743 @@
         }
     });
 </script>
-</section>
+{% endblock %}
+{% endcomment %}
+
+{% block styles %}
+<style>
+    :root {
+            --control-bg-color: #444;
+            --control-text-color: #aaa;
+            --control-hover-bg-color: #666;
+            --control-hover-text-color: #eee;
+            
+            --note-placeholder-color: #555;
+
+            /* text background colors */
+            --note-text-color-1: #FAFAFA;
+            /* black / white */
+            --note-text-color-2: #FF3B30;
+            /* red */
+            --note-text-color-3: #FF9500;
+            /* orange */
+            --note-text-color-4: #FFCC00;
+            /* yellow */
+            --note-text-color-5: #4CD964;
+            /* green */
+            --note-text-color-6: #5AC8FA;
+            /* light-blue */
+            --note-text-color-7: #007AFF;
+            /* dark-blue */
+            --note-text-color-8: #5856D6;
+            /* violet */
+
+            /* highlight background colors */
+            --note-highlight-color-1: hsl(0 50% 30%);
+            /* red */
+            --note-highlight-color-2: hsl(30 50% 30%);
+            /* orange */
+            --note-highlight-color-3: hsl(45 50% 30%);
+            /* yellow */
+            --note-highlight-color-4: hsl(120 50% 30%);
+            /* green */
+            --note-highlight-color-5: hsl(240 70% 40%);
+            /* light-blue */
+            --note-highlight-color-6: hsl(300 70% 40%);
+            /* violet */
+            --note-highlight-color-7: hsl(240 50% 30%);
+            /* dark-blue */
+            --note-highlight-color-8: hsl(330 50% 30%);
+            /* purple */
+    }
+
+    .editor-container {
+        width: 100%;
+        max-width: 800px;
+    }
+
+    .toolbar-nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+    }
+
+    .tools {
+        display: flex;
+        align-items: center;
+    }
+
+    #toolbar {
+        position: sticky;
+        position: -webkit-sticky;
+        gap: 8px;
+        top: 50px;
+        padding: 0 10px;
+        z-index: 9999;
+        background-color: rgb(38, 41, 45);
+        border-radius: 12px;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: .5rem;
+        gap: 30px;
+        flex-grow: 1;
+    }
+
+    #toolbar #splitbar {
+        margin-left: auto;
+    }
+
+    #toolbar input[type="file"] {
+        display: none;
+    }
+
+    #toolbar button,
+    #toolbar label,
+    #toolbar select {
+        padding: 8px;
+        border: none;
+        background: none;
+        color: var(--control-text-color);
+        font-size: 16px;
+        cursor: pointer;
+        transition: opacity 0.2s;
+        margin: 0;
+    }
+
+    #toolbar button:hover,
+    #toolbar label:hover,
+    #toolbar select:hover {
+        background: var(--control-hover-bg-color);
+        border-color: var(--control-hover-text-color);
+        color: var(--control-hover-text-color);
+    }
+
+    /* Dropdown container */
+    .dropdown {
+        position: relative;
+        display: inline-block;
+    }
+
+    /* Dropdown button style */
+    .dropdown>button {
+        padding: 6px 10px;
+    }
+
+    /* Dropdown content (hidden by default) */
+    .dropdown-content {
+        display: none;
+        position: absolute;
+        top: 110%;
+        right: 0;
+        background: var(--control-bg-color);
+        border: 1px solid var(--control-bg-color);
+        color: var(--control-text-color);
+        padding: 8px;
+        border-radius: 4px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+        z-index: 10;
+    }
+
+    /* Show dropdown when .show is added */
+    .dropdown-content.show {
+        display: block;
+    }
+
+    /* Grid of swatches */
+    .swatch-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, 24px);
+        gap: 6px;
+    }
+
+    .color-swatch {
+        width: 24px;
+        height: 24px;
+        border: none;
+        border-radius: 50%;
+        cursor: pointer;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .color-swatch:hover {
+        transform: scale(1.1);
+        box-shadow: 0 0 4px rgba(0, 0, 0, 0.3);
+    }
+
+    #saveDropdown {
+        width: 200px;
+    }
+
+    #saveDropdown button {
+        width: 100%;
+        text-align: left;
+    }
+
+    #editor {
+        min-height: 250px;
+        outline: none;
+        /* background: #f4f4f4; */
+    }
+
+    #editor a {
+        color: var(--note-link-color);
+        text-decoration: none;
+        font-weight: 800;
+        transition: all 0.2s ease-in-out;
+        border-bottom: 2px solid transparent;
+    }
+
+    #editor a:hover {
+        border-bottom: 2px solid var(--note-link-color);
+        color: var(--note-link-color);
+    }
+
+    #editor a::before {
+        content: "🔗";
+    }
+
+
+    #editor:empty::before,
+    #editor p:empty::before {
+        color: var(--note-placeholder-color);
+        display: block;
+    }
+
+    #footer {
+        text-align: center;
+        margin-top: 20px;
+        color: var(--attribution-color);
+    }
+
+    #footer a {
+        text-decoration: none;
+        color: var(--attribution-color);
+    }
+
+    img {
+        max-width: 100%;
+        height: auto;
+        display: block;
+        margin: 10px 0;
+        border-radius: 12px;
+    }
+
+    .thin-line::before {
+        content: "";
+        display: block;
+        width: 100%;
+        height: 1px;
+        background-color: var(--control-bg-color);
+        color: var(--control-text-color);
+        margin: 10px 0;
+    }
+
+    @media print {
+        .no-print {
+            display: none !important;
+        }
+
+        .editor-container {
+            width: 100%;
+            max-width: 100%;
+            box-shadow: none;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<main id="main">
+    <div class="toolbar-nav">
+        <form method="POST" action="/notes/{{ note.pid }}/">
+            <input type="submit" value="Go back"/>
+        </form>
+        <div id="toolbar" class="no-print">
+            <div class="tools">
+                <button onclick="changeBlock('h1')">H1</button>
+                <button onclick="changeBlock('h2')">H2</button>
+                <button onclick="changeBlock('p')">P</button>
+                <button onclick="changeBlock('small')">S</button>
+
+                <button onclick="applyFormat('strong')"><b>B</b></button>
+                <button onclick="applyFormat('em')"><i>I</i></button>
+                <button onclick="applyFormat('u')"><u>U</u></button>
+                <button onclick="applyURL()">🔗</button>
+
+                <label for="imageUpload">📷</label>
+                <input type="file" id="imageUpload" accept="image/*" onchange="insertImage(event)">
+
+                <div class="dropdown">
+                    <button onclick="toggleDropdown('textColorDropdown')">Color</button>
+                    <div id="textColorDropdown" class="dropdown-content">
+                        <div class="swatch-grid">
+                            <button class="color-swatch" style="background: var(--note-text-color-1);"
+                                onmousedown="event.preventDefault();"
+                                onclick="applyTextColor('1'); toggleDropdown('textColorDropdown')"></button>
+                            <button class="color-swatch" style="background: var(--note-text-color-2);"
+                                onmousedown="event.preventDefault();"
+                                onclick="applyTextColor('2'); toggleDropdown('textColorDropdown')"></button>
+                            <button class="color-swatch" style="background: var(--note-text-color-3);"
+                                onmousedown="event.preventDefault();"
+                                onclick="applyTextColor('3'); toggleDropdown('textColorDropdown')"></button>
+                            <button class="color-swatch" style="background: var(--note-text-color-4);"
+                                onmousedown="event.preventDefault();"
+                                onclick="applyTextColor('4'); toggleDropdown('textColorDropdown')"></button>
+                            <button class="color-swatch" style="background: var(--note-text-color-5);"
+                                onmousedown="event.preventDefault();"
+                                onclick="applyTextColor('5'); toggleDropdown('textColorDropdown')"></button>
+                            <button class="color-swatch" style="background: var(--note-text-color-6);"
+                                onmousedown="event.preventDefault();"
+                                onclick="applyTextColor('6'); toggleDropdown('textColorDropdown')"></button>
+                            <button class="color-swatch" style="background: var(--note-text-color-7);"
+                                onmousedown="event.preventDefault();"
+                                onclick="applyTextColor('7'); toggleDropdown('textColorDropdown')"></button>
+                            <button class="color-swatch" style="background: var(--note-text-color-8);"
+                                onmousedown="event.preventDefault();"
+                                onclick="applyTextColor('8'); toggleDropdown('textColorDropdown')"></button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Highlight Color Dropdown -->
+                <div class="dropdown">
+                    <button onclick="toggleDropdown('highlightDropdown')">Highlight</button>
+                    <div id="highlightDropdown" class="dropdown-content">
+                        <div class="swatch-grid">
+                            <button class="color-swatch" style="background: var(--note-highlight-color-1);"
+                                onmousedown="event.preventDefault();"
+                                onclick="applyHighlightColor('1'); toggleDropdown('highlightDropdown')"></button>
+                            <button class="color-swatch" style="background: var(--note-highlight-color-2);"
+                                onmousedown="event.preventDefault();"
+                                onclick="applyHighlightColor('2'); toggleDropdown('highlightDropdown')"></button>
+                            <button class="color-swatch" style="background: var(--note-highlight-color-3);"
+                                onmousedown="event.preventDefault();"
+                                onclick="applyHighlightColor('3'); toggleDropdown('highlightDropdown')"></button>
+                            <button class="color-swatch" style="background: var(--note-highlight-color-4);"
+                                onmousedown="event.preventDefault();"
+                                onclick="applyHighlightColor('4'); toggleDropdown('highlightDropdown')"></button>
+                            <button class="color-swatch" style="background: var(--note-highlight-color-5);"
+                                onmousedown="event.preventDefault();"
+                                onclick="applyHighlightColor('5'); toggleDropdown('highlightDropdown')"></button>
+                            <button class="color-swatch" style="background: var(--note-highlight-color-6);"
+                                onmousedown="event.preventDefault();"
+                                onclick="applyHighlightColor('6'); toggleDropdown('highlightDropdown')"></button>
+                            <button class="color-swatch" style="background: var(--note-highlight-color-7);"
+                                onmousedown="event.preventDefault();"
+                                onclick="applyHighlightColor('7'); toggleDropdown('highlightDropdown')"></button>
+                            <button class="color-swatch" style="background: var(--note-highlight-color-8);"
+                                onmousedown="event.preventDefault();"
+                                onclick="applyHighlightColor('8'); toggleDropdown('highlightDropdown')"></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="save-status">Saved</div>
+
+        </div>
+    </div>
+    <div class="editor-container card">
+        <div id="editorContainer">
+            <div id="editor" contenteditable="true">
+                {{ note.body|safe }}
+            </div>
+        </div>
+    </div>
+</main>
+<div class="renew-warn">
+    <p><b>Warning</b>: You are disconnected.<br>Changes cannot be saved until the connection is restored.</p>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let saveTimer;
+
+function delayedSave() {
+    console.log('delayedSave')
+    document.getElementById("save-status").innerHTML = "Unsaved";
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(save, 5000);
+}
+
+async function save() {
+    document.getElementById("save-status").innerHTML = "Saving";
+    const formData = new FormData();
+    await formData.append('body', document.querySelector('#editor').innerHTML);
+      fetch(`/note_edit/{{note.pid}}/`, {
+      method: 'POST',
+      body: formData
+    });
+    saveTimer = null;
+    document.getElementById("save-status").innerHTML = "Saved";
+}
+
+function setEditMode(editMode) {
+    let editor = document.getElementById("editor");
+    let toolbar = document.getElementById("toolbar");
+    let filename = document.getElementById("filename");
+
+    if (editMode) {
+        editor.contentEditable = "true";
+        filename.contentEditable = "plaintext-only";
+        toolbar.style.display = "flex";
+    }
+    else {
+        editor.contentEditable = "false";
+        filename.contentEditable = "false";
+        toolbar.style.display = "none";
+    }
+}
+
+function insertImage(event) {
+    let file = event.target.files[0];
+    if (file) {
+        let reader = new FileReader();
+        reader.onload = function (e) {
+            let img = document.createElement("img");
+            img.src = e.target.result;
+            document.querySelector("#editor").appendChild(img);
+            delayedSave()
+        };
+        reader.readAsDataURL(file);
+    }
+}
+
+// Toggle dropdown visibility
+function toggleDropdown(id) {
+    const dropdown = document.getElementById(id);
+    if (dropdown.classList.contains('show')) {
+        dropdown.classList.remove('show');
+    } else {
+        // Close any open dropdowns first
+        document.querySelectorAll('.dropdown-content').forEach(el => el.classList.remove('show'));
+        dropdown.classList.add('show');
+    }
+}
+
+document.addEventListener('click', function (e) {
+    if (!e.target.closest('.dropdown')) {
+        document.querySelectorAll('.dropdown-content').forEach(el => el.classList.remove('show'));
+    }
+});
+
+// Helper: Place the caret at a given element and offset.
+function setCaret(el, pos) {
+    const selection = window.getSelection();
+    const range = document.createRange();
+    range.setStart(el, pos);
+    range.collapse(true);
+    selection.removeAllRanges();
+    selection.addRange(range);
+}
+
+// Wrap only the selected portions of text nodes.
+// If selection is entirely within one text node, process it directly.
+function wrapRangeText(range, tagName, style, hook) {
+    const textNodes = [];
+    if (range.commonAncestorContainer.nodeType === Node.TEXT_NODE) {
+        textNodes.push(range.commonAncestorContainer);
+    } else {
+        const walker = document.createTreeWalker(
+            range.commonAncestorContainer,
+            NodeFilter.SHOW_TEXT,
+            {
+                acceptNode: function (node) {
+                    return range.intersectsNode(node)
+                        ? NodeFilter.FILTER_ACCEPT
+                        : NodeFilter.FILTER_REJECT;
+                }
+            }
+        );
+        let node;
+        while (node = walker.nextNode()) {
+            textNodes.push(node);
+        }
+    }
+
+    textNodes.forEach(function (textNode) {
+        let start = 0, end = textNode.textContent.length;
+        if (textNode === range.startContainer) {
+            start = range.startOffset;
+        }
+        if (textNode === range.endContainer) {
+            end = range.endOffset;
+        }
+        if (start >= end) return;
+
+        const parent = textNode.parentNode;
+        const wrapper = document.createElement(tagName);
+        if (style) {
+            wrapper.style.cssText = style;
+        }
+        if (hook) {
+            hook(wrapper);
+        }
+        wrapper.textContent = textNode.textContent.substring(start, end);
+
+        const frag = document.createDocumentFragment();
+        const beforeText = textNode.textContent.substring(0, start);
+        const afterText = textNode.textContent.substring(end);
+        if (beforeText) {
+            frag.appendChild(document.createTextNode(beforeText));
+        }
+        frag.appendChild(wrapper);
+        if (afterText) {
+            frag.appendChild(document.createTextNode(afterText));
+        }
+        parent.replaceChild(frag, textNode);
+    });
+    delayedSave()
+}
+
+// Basic inline formatting: wraps the selection in the specified tag.
+function applyFormat(tagName) {
+    const selection = window.getSelection();
+    if (!selection.rangeCount || selection.isCollapsed) return;
+    const range = selection.getRangeAt(0);
+    const editor = document.getElementById('editor');
+    if (!editor.contains(range.commonAncestorContainer)) return;
+    wrapRangeText(range, tagName);
+    selection.removeAllRanges();
+}
+
+// Apply inline style (e.g., font-size, text color, background color) by wrapping the selection in a <span>.
+function applyStyle(styleString) {
+    const selection = window.getSelection();
+    if (!selection.rangeCount || selection.isCollapsed) return;
+    const range = selection.getRangeAt(0);
+    const editor = document.getElementById('editor');
+    if (!editor.contains(range.commonAncestorContainer)) return;
+    wrapRangeText(range, 'span', styleString);
+    selection.removeAllRanges();
+}
+
+// Apply inline url 
+function applyURL() {
+    const selection = window.getSelection();
+    if (!selection.rangeCount || selection.isCollapsed) return;
+    const range = selection.getRangeAt(0);
+    const editor = document.getElementById('editor');
+    if (!editor.contains(range.commonAncestorContainer)) return;
+    const url = prompt("URL");
+    if (!url) return;
+    wrapRangeText(range, 'a', null, function (element) {
+        element.href = url;
+    });
+    selection.removeAllRanges();
+}
+
+// Called by the text size dropdown.
+function applyTextSize(size) {
+    if (!size) return;
+    applyStyle("font-size: " + size + ";");
+}
+
+// Called when a text color swatch is clicked.
+function applyTextColor(color) {
+    if (!color) return;
+    applyStyle("color: var(--note-text-color-" + color + ");");
+}
+
+// Called when a highlight (background color) swatch is clicked.
+function applyHighlightColor(color) {
+    if (!color) return;
+    applyStyle("background-color: var(--note-highlight-color-" + color + ");");
+}
+
+// Convert the current block (direct child of #editor) to the chosen tag.
+function changeBlock(tag) {
+    const selection = window.getSelection();
+    if (!selection.rangeCount) return;
+    let node = selection.anchorNode;
+    const editor = document.getElementById('editor');
+    while (node && node.parentNode !== editor) {
+        node = node.parentNode;
+    }
+    if (!node || node === editor) return;
+    const newBlock = document.createElement(tag);
+    while (node.firstChild) {
+        if (
+            node.firstChild.nodeType === Node.ELEMENT_NODE &&
+            node.firstChild.matches('p') &&
+            tag.match(/^H[1-6]$/)
+        ) {
+            let child = node.firstChild;
+            while (child.firstChild) {
+                newBlock.appendChild(child.firstChild);
+            }
+            node.removeChild(child);
+        } else {
+            newBlock.appendChild(node.firstChild);
+        }
+    }
+    editor.replaceChild(newBlock, node);
+    const range = document.createRange();
+    range.selectNodeContents(newBlock);
+    range.collapse(false);
+    selection.removeAllRanges();
+    selection.addRange(range);
+    delayedSave()
+}
+
+// Splits the current block at the caret.
+function splitBlock() {
+    const editor = document.getElementById('editor');
+    const selection = window.getSelection();
+    if (!selection.rangeCount) return;
+    const range = selection.getRangeAt(0);
+
+    let block = range.startContainer;
+    while (block && block.parentNode !== editor) {
+        block = block.parentNode;
+    }
+    if (!block) {
+        const p = document.createElement('p');
+        p.innerHTML = '<br>';
+        editor.appendChild(p);
+        setCaret(p, 0);
+        return;
+    }
+
+    const afterRange = range.cloneRange();
+    afterRange.setStart(range.endContainer, range.endOffset);
+    afterRange.setEndAfter(block.lastChild || block);
+    const afterContent = afterRange.cloneContents();
+
+    const isAtEnd = !Array.from(afterContent.childNodes).some(n => {
+        return (n.nodeType === Node.ELEMENT_NODE) ||
+            (n.nodeType === Node.TEXT_NODE && n.textContent.trim());
+    });
+
+    if (isAtEnd) {
+        const newBlock = document.createElement('p');
+        newBlock.innerHTML = '<br>';
+        if (block.nextSibling) {
+            editor.insertBefore(newBlock, block.nextSibling);
+        } else {
+            editor.appendChild(newBlock);
+        }
+        setCaret(newBlock, 0);
+    } else {
+        const newBlock = document.createElement('p');
+        const extractRange = range.cloneRange();
+        extractRange.setEndAfter(block.lastChild || block);
+        const extracted = extractRange.extractContents();
+        if (!extracted.childNodes.length) {
+            newBlock.innerHTML = '<br>';
+        } else {
+            newBlock.appendChild(extracted);
+        }
+        if (block.nextSibling) {
+            editor.insertBefore(newBlock, block.nextSibling);
+        } else {
+            editor.appendChild(newBlock);
+        }
+        setCaret(newBlock, 0);
+    }
+
+    if (!block.textContent.trim() && !block.querySelector('img, video, iframe, embed, object')) {
+        block.innerHTML = '<br>';
+    }
+}
+
+// Normalize stray text nodes and nested blocks.
+function normalizeEditor() {
+    const editor = document.getElementById('editor');
+    Array.from(editor.childNodes).forEach(node => {
+        if (node.nodeType === Node.TEXT_NODE && node.textContent.trim()) {
+            const p = document.createElement('p');
+            p.textContent = node.textContent;
+            editor.replaceChild(p, node);
+        }
+    });
+    editor.querySelectorAll('p p, h1 p, h2 p, h3 p, h4 p, h5 p, h6 p, p font, small p').forEach(nested => {
+        const parent = nested.parentNode;
+        while (nested.firstChild) {
+            parent.insertBefore(nested.firstChild, nested);
+        }
+        parent.removeChild(nested);
+    });
+}
+
+// Normalize stray text nodes and nested blocks.
+function cleanEditor() {
+    const editor = document.getElementById('editor');
+    if (editor.firstChild && ["H1", "H2", "H3", "H4", "H5", "H6", "P"].includes(editor.firstChild.nodeName)) {
+        return;
+    }
+    if (editor.innerHTML.trim() === "" || editor.innerHTML.trim() === "<br>") {
+        editor.innerHTML = "<p></p>";
+    }
+}
+
+function keydownHandler(e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        splitBlock();
+    }
+    if ((e.ctrlKey || e.metaKey) && (e.key === 'z' || e.key === 'y')) {
+        e.preventDefault();
+    }
+}
+
+function clickHandler(e) {
+    const target = e.target.closest("a");
+    if (!target || !document.getElementById("editorContainer").contains(target)) return;
+
+    e.preventDefault();
+
+    const userConfirmed = confirm(`"${target.href}" open this url?`);
+    if (userConfirmed) {
+        window.open(target.href, "_blank");
+    }
+}
+
+function inputHandler(e) {
+    cleanEditor(e)
+    delayedSave()
+}
+
+function renewLock() {
+    try {
+        fetch(`/renew_lock/{{ note.pid }}`)
+            .then(response => response.json())
+            .then(data => {
+                if(data.msg == 'ok') {
+                    document.querySelector('.renew-warn').style.display = 'none';
+                }
+            })
+            .catch(error => {
+                console.error('Error renewing lock:', error);
+                document.querySelector('.renew-warn').style.display = 'block';
+            });
+    } catch(e) {
+        console.log(e)
+    }
+}
+
+editor = document.getElementById('editor');
+
+editor.addEventListener('keydown', keydownHandler);
+editor.addEventListener('click', clickHandler);
+editor.addEventListener('blur', normalizeEditor);
+editor.addEventListener("input", inputHandler);
+editor.addEventListener("focus", cleanEditor);
+
+document.addEventListener('DOMContentLoaded', function () {
+    setInterval(renewLock, 5000);
+});
+
+window.addEventListener("beforeunload", function (e) {
+    console.log(saveTimer);
+    if (saveTimer != null) {
+        e.preventDefault();
+        e.returnValue = "";
+    }
+});
+</script>
+{% endblock %}
