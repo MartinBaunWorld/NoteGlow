@@ -1,5 +1,6 @@
 #!/bin/bash
 
+./bin/cleandb
 mkdir -p $HOME/data/backup
-sqlite3 $HOME/data/db.sqlite3 ".dump" > /tmp/db.sql
-sqlite3 $HOME/data/backup/$(date +"%Y-%m-%d_%H-%M-%S").db ".read /tmp/db.sql"
+sqlite3 $HOME/data/db.sqlite3 .dump" > /tmp/db_$(date +"%Y-%m-%d_%H-%M-%S").sql
+sqlite3 $HOME/data/backup/$(date +"%Y-%m-%d_%H-%M-%S").db ".read /tmp/db_$(date +"%Y-%m-%d_%H-%M-%S").sql"
