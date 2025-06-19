@@ -2,4 +2,13 @@ noteglow.com {
     handle /* {
             reverse_proxy unix//home/noteglow0/data/gunicorn.sock
     }
+
+    handle /static
+	# Ensure cors
+	import cors
+	encode zstd gzip
+	header Cache-Control max-age=86400
+	file_server
+	root * /mnt/HC_Volume_100417206/media
+}
 }
